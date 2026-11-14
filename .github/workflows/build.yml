@@ -1,0 +1,88 @@
+name: Build installers
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            gui_name: provenance-scrubber
+          - os: windows-latest
+            platform: windows
+            gui_name: provenance-scrubber.exe
+          - os: macos-latest
+            platform: macos
+            gui_name: provenance-scrubber
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build CLI binary
+        run: |
+          pyinstaller --onefile --name provenance-scrubber-cli cli_main.py
+
+      - name: Build GUI app
+        run: |
+          pyinstaller --onefile --windowed --name provenance-scrubber desktop_gui.py
+
+      - name: Package artifacts (unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd dist
+          tar czf ../provenance-scrubber-cli-${{ matrix.platform }}.tar.gz provenance-scrubber-cli
+          if [ "${{ matrix.platform }}" = "macos" ]; then
+            ditto -c -k --sequesterRsrc provenance-scrubber.app ../provenance-scrubber-gui-${{ matrix.platform }}.zip
+          else
+            tar czf ../provenance-scrubber-gui-${{ matrix.platform }}.tar.gz ${{ matrix.gui_name }}
+          fi
+
+      - name: Package artifacts (windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Compress-Archive dist/provenance-scrubber-cli.exe provenance-scrubber-cli-windows.zip
+          Compress-Archive dist/provenance-scrubber.exe provenance-scrubber-gui-windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: provenance-scrubber-${{ matrix.platform }}
+          path: |
+            provenance-scrubber-cli-${{ matrix.platform }}.*
+            provenance-scrubber-gui-${{ matrix.platform }}.*
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: provenance-scrubber-*
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            provenance-scrubber-cli-*
+            provenance-scrubber-gui-*
+          generate_release_notes: true
