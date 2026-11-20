@@ -125,4 +125,4 @@ agree your changes are released under the same license.
 ## Vanguard Arts
 
 - **Website:** https://vanguardarts.vip/
-- **Support / contact:** [https://vanguardarts.vip/contact](https://vanguardarts.vip/contact) (contact form)
+- **Support:** [https://vanguardarts.vip/contact](https://vanguardarts.vip/contact)
