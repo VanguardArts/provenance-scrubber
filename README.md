@@ -13,6 +13,16 @@ you don't own, or republishing scrubbed content where platform rules or law
 (e.g. transparency obligations, DMCA §1202-type provisions) require the
 markers, may violate terms of service or law — that's on the operator.
 
+## Screenshots
+
+The desktop GUI (drag & drop, level picker, live results table) and its status
+after a batch run:
+
+<p align="center">
+  <img src="docs/screenshots/gui-main.png" alt="Provenance Scrubber GUI" width="48%">
+  <img src="docs/screenshots/gui-results.png" alt="Provenance Scrubber results" width="48%">
+</p>
+
 ## What it detects / removes
 
 | Format | Detection | Removal |
