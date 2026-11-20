@@ -9,7 +9,7 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "provenance-scrubber";
-  version = "0.1.0";
+  version = "0.2.0";
 
   src = ./.;
 

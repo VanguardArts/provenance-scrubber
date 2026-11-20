@@ -5,4 +5,4 @@ pixel-domain transform ladder for degrading latent (invisible) watermarks.
 Intended for processing your own content and for authorized security research.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
