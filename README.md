@@ -111,21 +111,36 @@ out, ext, psnr = transform_file("photo.png", level=2)  # full ladder
 3. For files flagged `declared_watermark`, test levels 1–3 against the target
    platform/detector and pick the weakest level that passes.
 
-## Installers
+## Install
 
-Pre-built standalone binaries (no Python needed) are attached to each
-[GitHub release](../../releases) — GUI app and CLI for Linux, Windows, and
-macOS. They are built by the CI workflow in
-[.github/workflows/build.yml](.github/workflows/build.yml) (PyInstaller);
-tag a commit `v*` or run the workflow manually to produce a new set.
+Every release ships native packages for all major distro families, plus
+standalone binaries (no Python needed) for Linux, Windows and macOS (CLI + GUI).
 
-To build locally:
+| Distro family | Format | Install |
+|---|---|---|
+| Debian / Ubuntu / Mint | `.deb` | `sudo dpkg -i provenance-scrubber_*.deb` |
+| Fedora / RHEL / openSUSE | `.rpm` | `sudo dnf install provenance-scrubber-*.rpm` |
+| Arch / Manjaro | `PKGBUILD` | `pacman -U provenance-scrubber-*.pkg.tar.zst` |
+| NixOS / Nix | flake | `nix profile install github:VanguardArts/provenance-scrubber` |
+| Any distro | Flatpak | `flatpak install com.vanguardarts.ProvenanceScrubber` |
+| Any distro (portable) | AppImage | download `provenance-scrubber-*.AppImage` |
+| Any Linux (no root) | portable | `./install.sh` (installs to `~/.local`) |
+
+Installed commands: `provenance-scrubber` (CLI) and `provenance-scrubber-gui`
+(desktop GUI). A web UI is available via `python webapp.py`.
+
+### Build the packages locally
 
 ```bash
-pip install -r requirements.txt pyinstaller
-pyinstaller --onefile --name provenance-scrubber-cli cli_main.py
-pyinstaller --onefile --windowed --name provenance-scrubber desktop_gui.py
+make icons          # regenerate icon PNG set from the SVG (needs cairosvg)
+make deb            # build/deb/*.deb         (needs dpkg-deb)
+make rpm            # build/rpm/RPMS/*.rpm    (needs rpmbuild)
+make flatpak        # build/flatpak/*.flatpak (needs flatpak-builder)
+make appimage       # build/appimage/*.AppImage
 ```
+
+Standalone binaries (PyInstaller) are produced by the CI workflow in
+[.github/workflows/build.yml](.github/workflows/build.yml).
 
 ## License
 

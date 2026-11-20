@@ -1,0 +1,30 @@
+app-id: com.vanguardarts.ProvenanceScrubber
+runtime: org.kde.Platform
+runtime-version: '6.7'
+sdk: org.kde.Sdk
+command: provenance-scrubber-gui
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --filesystem=home
+modules:
+  - name: python-deps
+    buildsystem: simple
+    build-commands:
+      - pip3 install --no-deps --prefix=${FLATPAK_DEST} Pillow flask requests
+  - name: provenance-scrubber
+    buildsystem: simple
+    build-commands:
+      - install -dm755 ${FLATPAK_DEST}/lib/provenance-scrubber
+      - cp -r scrubber ${FLATPAK_DEST}/lib/provenance-scrubber/
+      - cp cli_main.py desktop_gui.py webapp.py ${FLATPAK_DEST}/lib/provenance-scrubber/
+      - install -Dm755 ${FLATPAK_DEST}/lib/provenance-scrubber/cli_main.py ${FLATPAK_DEST}/bin/provenance-scrubber
+      - install -Dm755 ${FLATPAK_DEST}/lib/provenance-scrubber/desktop_gui.py ${FLATPAK_DEST}/bin/provenance-scrubber-gui
+      - install -Dm644 packaging/provenance-scrubber.desktop ${FLATPAK_DEST}/share/applications/com.vanguardarts.ProvenanceScrubber.desktop
+      - install -Dm644 packaging/provenance-scrubber.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/com.vanguardarts.ProvenanceScrubber.svg
+      - install -Dm644 packaging/flatpak/com.vanguardarts.ProvenanceScrubber.metainfo.xml ${FLATPAK_DEST}/share/metainfo/com.vanguardarts.ProvenanceScrubber.metainfo.xml
+    sources:
+      - type: dir
+        path: .

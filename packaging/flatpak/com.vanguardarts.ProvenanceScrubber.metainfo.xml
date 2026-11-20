@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.vanguardarts.ProvenanceScrubber</id>
+  <name>Provenance Scrubber</name>
+  <summary>Detect and strip provenance metadata from images</summary>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <url type="homepage">https://github.com/VanguardArts/provenance-scrubber</url>
+  <description>
+    <p>
+      Batches images and removes embedded provenance signals — C2PA Content
+      Credentials manifests, EXIF, XMP, IPTC and generator strings — with
+      optional pixel-domain transforms that degrade invisible watermarks.
+    </p>
+  </description>
+  <launchable type="desktop-id">com.vanguardarts.ProvenanceScrubber.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/VanguardArts/provenance-scrubber/main/docs/screenshots/gui-main.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.1.0" date="2026-11-21"/>
+  </releases>
+</component>

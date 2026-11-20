@@ -76,13 +76,30 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate icon assets
+        run: python3 -m pip install --quiet cairosvg && python3 scripts/make_icons.py
+
+      - name: Build .deb (Debian/Ubuntu)
+        run: bash scripts/build-deb.sh
+
+      - name: Build .rpm (Fedora/RHEL/openSUSE)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rpm
+          bash scripts/build-rpm.sh
+
       - uses: actions/download-artifact@v4
         with:
           pattern: provenance-scrubber-*
           merge-multiple: true
+
       - uses: softprops/action-gh-release@v2
         with:
           files: |
             provenance-scrubber-cli-*
             provenance-scrubber-gui-*
+            build/deb/*.deb
+            build/rpm/RPMS/noarch/*.rpm
           generate_release_notes: true
