@@ -190,18 +190,11 @@ class MainWindow(QMainWindow):
         self.detail.setPlainText("\n\n".join(parts))
         self.status.setText(f"Provenance analyzed for {len(parts)} file(s)")
 
-    def on_selection(self):
-        rows = self.table.selectionModel().selectedRows()
-        if not rows or not self.results:
-            return
-        idx = rows[0].row()
-        if idx >= len(self.results):
-            return
-        r = self.results[idx]
-        lines = [f"File: {Path(r.source).name}"]
-        lines.append("--- BEFORE (present in source) ---")
-        bef = r.provenance_before
-        for m in (bef.get("manifests") or []):
+    def _prov_lines(self, prov, label):
+        lines = [f"--- {label} ---"]
+        found = False
+        for m in (prov.get("manifests") or []):
+            found = True
             gen = (m.get("claim_generator", "") + " " +
                    m.get("claim_generator_version", "")).strip()
             lines.append(f"  manifest: {gen}" if gen else "  manifest: (unnamed)")
@@ -217,29 +210,37 @@ class MainWindow(QMainWindow):
                              + (f" (issuer {iss})" if iss else ""))
             if m.get("instance_id"):
                 lines.append(f"    instanceID: {m['instance_id']}")
-        if not bef.get("has_manifest") and not bef.get("exif") and \
-                not bef.get("xmp") and not bef.get("iptc_present"):
+        if prov.get("exif"):
+            found = True
+            lines.append(f"  EXIF: {len(prov['exif'])} field(s)")
+        if prov.get("xmp"):
+            found = True
+            lines.append("  XMP: present")
+        if prov.get("iptc_present"):
+            found = True
+            lines.append("  IPTC: present")
+        if not found:
             lines.append("  (no provenance metadata)")
         lines.append("")
-        lines.append("--- AFTER excision ---")
-        aft = r.provenance_after
-        if not (aft.get("manifests") or aft.get("exif") or aft.get("xmp")
-                or aft.get("iptc_present")):
-            lines.append("  (no provenance metadata)")
-        else:
-            for m in (aft.get("manifests") or []):
-                lines.append(f"  manifest: {m.get('claim_generator','')}")
-        lines.append("")
+        return lines
+
+    def on_selection(self):
+        rows = self.table.selectionModel().selectedRows()
+        if not rows or not self.results:
+            return
+        idx = rows[0].row()
+        if idx >= len(self.results):
+            return
+        r = self.results[idx]
+        lines = [f"File: {Path(r.source).name}"]
+        lines += self._prov_lines(r.provenance_before, "BEFORE (present in source)")
+        lines += self._prov_lines(r.provenance_after, "AFTER excision")
         lines.append("--- DIFF (proof) ---")
         d = r.provenance_diff
-        if d.get("removed"):
-            lines.append("  removed: " + ", ".join(d["removed"]))
-        else:
-            lines.append("  removed: (none)")
-        if d.get("remained"):
-            lines.append("  remained: " + ", ".join(d["remained"]))
-        else:
-            lines.append("  remained: (none)")
+        removed = ", ".join(d["removed"]) if d.get("removed") else "(none)"
+        remained = ", ".join(d["remained"]) if d.get("remained") else "(none)"
+        lines.append(f"  removed: {removed}")
+        lines.append(f"  remained: {remained}")
         self.detail.setPlainText("\n".join(lines))
 
     # ---------- run

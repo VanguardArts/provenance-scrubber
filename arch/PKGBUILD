@@ -1,6 +1,6 @@
 # Maintainer: Vanguard Arts SRL <https://vanguardarts.vip/>
 pkgname=provenance-scrubber
-pkgver=0.3.0
+pkgver=0.3.1
 pkgrel=1
 pkgdesc="Detect and strip provenance metadata (C2PA/EXIF/XMP/IPTC) from images"
 arch=('any')

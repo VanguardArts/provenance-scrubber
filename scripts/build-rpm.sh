@@ -4,7 +4,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-VERSION="${VERSION:-0.3.0}"
+VERSION="${VERSION:-0.3.1}"
 TOPDIR="build/rpm"
 
 rm -rf "$TOPDIR"

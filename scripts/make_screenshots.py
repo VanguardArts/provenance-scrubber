@@ -88,6 +88,16 @@ def main() -> int:
         w.progress.setRange(0, len(results))
         w.progress.setValue(len(results))
 
+        # Select a row with an actual removal so the provenance detail pane
+        # (before/after + diff) demonstrates its value in the screenshot.
+        sel = 0
+        for i, rr in enumerate(results):
+            if rr.status == "ok" and rr.provenance_diff.get("removed"):
+                sel = i
+                break
+        w.table.selectRow(sel)
+        QApplication.processEvents()
+
         grab(w, SCREENSHOTS / "gui-results.png")
 
     print(f"Wrote {SCREENSHOTS / 'gui-main.png'}")
