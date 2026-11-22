@@ -100,6 +100,14 @@ class MainWindow(QMainWindow):
         self.det_shell.setPlaceholderText(
             "optional: external detector command, use {path} (e.g. "
             "/opt/lab/aidec --json {path})")
+        self.det_openai = QCheckBox("OpenAI provenance API")
+        self.det_openai.setToolTip(
+            "Detect C2PA + SynthID via OpenAI's Content Provenance API "
+            "(needs OPENAI_API_KEY).")
+        self.det_ss = QLineEdit()
+        self.det_ss.setMinimumWidth(220)
+        self.det_ss.setMaximumWidth(320)
+        self.det_ss.setPlaceholderText("stable-signature key (48 bits)")
         self.run_btn = QPushButton("Run")
         self.run_btn.clicked.connect(self.run)
         self.analyze_btn = QPushButton("Analyze")
@@ -111,6 +119,14 @@ class MainWindow(QMainWindow):
         row3.addWidget(self.analyze_btn)
         row3.addWidget(self.run_btn)
         lay.addLayout(row3)
+
+        # --- detector row
+        det_row = QHBoxLayout()
+        det_row.addWidget(QLabel("Detectors:"))
+        det_row.addWidget(self.det_openai)
+        det_row.addWidget(self.det_ss)
+        det_row.addStretch(1)
+        lay.addLayout(det_row)
 
         # --- progress + table + detail viewer
         self.progress = QProgressBar()
@@ -186,7 +202,7 @@ class MainWindow(QMainWindow):
             return
         parts = []
         for img in iter_images(Path(src)):
-            parts.append(pretty(analyze(img)))
+            parts.append(pretty(analyze(img, verify=True)))
         self.detail.setPlainText("\n\n".join(parts))
         self.status.setText(f"Provenance analyzed for {len(parts)} file(s)")
 
@@ -255,6 +271,10 @@ class MainWindow(QMainWindow):
             specs.append("metadata")
         if self.det_shell.text().strip():
             specs.append(f"shell:{self.det_shell.text().strip()}")
+        if self.det_openai.isChecked():
+            specs.append("openai")
+        if self.det_ss.text().strip():
+            specs.append(f"stable-signature:{self.det_ss.text().strip()}")
         detectors = load_plugins(specs=specs) if specs else None
 
         total = len(iter_images(Path(src)))

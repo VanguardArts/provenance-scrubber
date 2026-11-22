@@ -111,8 +111,11 @@ Provenance report: ChatGPT_Image.png
 ```
 
 Note: the analyzer reports the *embedded* signer identity and certificate (what
-the manifest claims). It does not perform cryptographic signature validation
-against a trust list — use `c2patool` for that.
+the manifest claims). When the optional [`c2pa-python`](https://github.com/contentauth/c2pa-python)
+package is installed, `--analyze` (and the GUI **Analyze** button) also run real
+cryptographic verification — signature, data-hash and trust — and print a
+`C2PA signature verification: valid | invalid | unsigned` verdict with the
+individual validation codes. Install it with `pip install c2pa-python`.
 
 ## Detector plugins
 
@@ -124,11 +127,15 @@ care about. Specs (repeatable via `--detectors` or `detectors.json`):
 |---|---|
 | `metadata` | built-in audit — flagged if any provenance signal remains |
 | `watermark-declared` | flagged if a C2PA manifest declares `c2pa.watermarked.*` |
+| `openai[:url]` | POSTs to OpenAI's [Content Provenance API](https://developers.openai.com/api/docs/guides/content-provenance) (detects C2PA metadata **and SynthID watermark**). Needs `OPENAI_API_KEY` (needs `requests`) |
+| `stable-signature[:48bit-key]` | decodes the Meta [Stable Signature](https://github.com/facebookresearch/stable_signature) 48-bit pixel watermark via Meta's public HiDDeN extractor. Needs `torch` + `torchvision`; forensic when you supply the key (Binomial(48,0.5) p-value) |
 | `shell:<cmd>` | runs an external tool; `{path}` substituted with the image path. Exit 0 = clean, 1 = flagged, or JSON on stdout `{"flagged": bool, "score": ..., "details": ...}` |
 | `http:<url>` | POSTs the file (multipart field `file`) to a lab endpoint; expects JSON `{"flagged": ...}` (needs `requests`) |
 
-Verdicts land in the report (`detector_verdicts`) and in the CLI summary /
-GUI table as `plugin:FLAG|ok|?`.
+A ready-made config is in [`detectors.json.example`](detectors.json.example) — copy it to
+`detectors.json` (next to the CLI) to enable the same set by default. Verdicts
+land in the report (`detector_verdicts`) and in the CLI summary / GUI table as
+`plugin:FLAG|ok|?`.
 
 ## Library
 

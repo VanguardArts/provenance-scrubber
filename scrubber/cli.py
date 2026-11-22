@@ -5,6 +5,8 @@ Examples:
   python -m scrubber.cli ./batch-folder -o out/ -l 2 --report report.json
   python -m scrubber.cli ./batch-folder --detect-only
   python -m scrubber.cli ./folder -l 2 --detectors metadata --detectors "shell:/opt/lab/aidec {path}"
+  python -m scrubber.cli photo.png --analyze      # deep parse + C2PA verify
+  python -m scrubber.cli ./folder -l 3 --detectors openai --detectors "stable-signature:101101..."
 """
 
 from __future__ import annotations
@@ -38,8 +40,9 @@ def main(argv: list[str] | None = None) -> int:
                     help="parallel workers (default: min(8, cpu_count))")
     ap.add_argument("--detectors", action="append", metavar="SPEC",
                     help="score outputs with detector plugins; repeatable. "
-                         "SPECs: metadata | watermark-declared | "
-                         "shell:<cmd {path}> | http:<url>")
+                         "SPECs: metadata | watermark-declared | openai[:url] | "
+                         "stable-signature[:48bit-key] | shell:<cmd {path}> | "
+                         "http:<url>")
     ap.add_argument("--detectors-config",
                     help="JSON config listing plugins (default: detectors.json "
                          "next to the CLI if present)")
@@ -68,7 +71,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.analyze:
         for img in iter_images(src):
-            print(pretty(analyze(img)))
+            print(pretty(analyze(img, verify=True)))
             print()
         return 0
 

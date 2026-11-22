@@ -210,6 +210,7 @@ class ProvenanceReport:
     exif: dict = field(default_factory=dict)
     xmp: str = ""
     iptc_present: bool = False
+    verification: dict | None = None  # optional cryptographic verify (c2pa-python)
 
     @property
     def summary_keys(self) -> list[str]:
@@ -399,7 +400,10 @@ def _extract_exif_xmp(path: Path, data: bytes) -> tuple[dict, str, bool]:
     return exif, xmp, iptc
 
 
-def analyze(path: str | Path) -> ProvenanceReport:
+def analyze(path: str | Path, verify: bool = False) -> ProvenanceReport:
+    """Deep-parse a file's provenance. Set ``verify=True`` to also run
+    cryptographic C2PA verification (requires the optional ``c2pa-python``
+    package; otherwise the ``verification`` field reports "unavailable")."""
     path = Path(path)
     data = path.read_bytes()
     report = ProvenanceReport(path=str(path))
@@ -413,6 +417,14 @@ def analyze(path: str | Path) -> ProvenanceReport:
             report.manifests = manifests
 
     report.exif, report.xmp, report.iptc_present = _extract_exif_xmp(path, data)
+
+    if verify:
+        try:
+            from .verify import verify_c2pa
+            report.verification = verify_c2pa(path)
+        except Exception as exc:  # pragma: no cover - defensive
+            report.verification = {"available": False, "status": "error",
+                                   "error": str(exc)}
     return report
 
 
@@ -473,6 +485,17 @@ def pretty(report: ProvenanceReport) -> str:
         lines.append(f"  XMP: present ({len(report.xmp)} chars)")
     if report.iptc_present:
         lines.append("  IPTC: present")
+    if report.verification is not None:
+        v = report.verification
+        status = v.get("status", "?")
+        line = f"  C2PA signature verification: {status}"
+        if v.get("active_manifest"):
+            line += f" ({v['active_manifest']})"
+        if v.get("validation_codes"):
+            line += " codes=" + ",".join(v["validation_codes"])
+        if v.get("error"):
+            line += f" [{v['error']}]"
+        lines.append(line)
     if not report.has_manifest and not report.exif and not report.xmp \
             and not report.iptc_present:
         lines.append("  (no provenance metadata found)")

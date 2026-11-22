@@ -1,5 +1,5 @@
 Name:           provenance-scrubber
-Version:        0.3.1
+Version:        0.4.0
 Release:        1%{?dist}
 Summary:        Detect and strip provenance metadata (C2PA/EXIF/XMP/IPTC) from images
 License:        MIT
@@ -67,6 +67,10 @@ done
 %{_datadir}/icons/hicolor/512x512/apps/provenance-scrubber.png
 
 %changelog
+* Sun Nov 22 2026 Vanguard Arts SRL <https://vanguardarts.vip/> - 0.4.0-1
+- Detector plugins: OpenAI Content Provenance API (C2PA + SynthID) and
+  Meta Stable Signature pixel-watermark decoder; optional c2pa-python
+  cryptographic verification in the analyzer
 * Sun Nov 22 2026 Vanguard Arts SRL <https://vanguardarts.vip/> - 0.3.1-1
 - Update GUI detail pane and regenerate screenshots
 * Sun Nov 22 2026 Vanguard Arts SRL <https://vanguardarts.vip/> - 0.3.0-1

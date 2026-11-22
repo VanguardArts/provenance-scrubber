@@ -1,0 +1,9 @@
+{
+  "_comment": "Detector plugins scored against each scrubbed output. List of spec strings. See README 'Detector plugins'.",
+  "plugins": [
+    "metadata",
+    "watermark-declared",
+    "openai",
+    "stable-signature"
+  ]
+}
