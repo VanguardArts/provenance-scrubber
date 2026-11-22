@@ -1,4 +1,5 @@
 Pillow>=10
+cbor2>=5.6   # C2PA manifest CBOR decoding (analyzer)
 flask>=3    # only needed for webapp.py
 PySide6>=6.6  # only needed for desktop_gui.py
 requests    # only needed for http: detector plugins

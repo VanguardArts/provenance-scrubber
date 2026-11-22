@@ -1,5 +1,5 @@
 Name:           provenance-scrubber
-Version:        0.2.0
+Version:        0.3.0
 Release:        1%{?dist}
 Summary:        Detect and strip provenance metadata (C2PA/EXIF/XMP/IPTC) from images
 License:        MIT
@@ -11,6 +11,7 @@ BuildArch:      noarch
 Requires:       python3
 Requires:       python3-pillow
 Requires:       python3-pyside6
+Requires:       python3-cbor2
 
 %description
 Batches images and removes embedded provenance signals — C2PA Content
@@ -66,6 +67,9 @@ done
 %{_datadir}/icons/hicolor/512x512/apps/provenance-scrubber.png
 
 %changelog
+* Sun Nov 22 2026 Vanguard Arts SRL <https://vanguardarts.vip/> - 0.3.0-1
+- Add provenance analyzer/viewer with before/after diff
 * Sat Nov 21 2026 Vanguard Arts SRL <https://vanguardarts.vip/> - 0.2.0-1
+- Linux packaging: deb, rpm, PKGBUILD, nix, flatpak, AppImage
 * Sat Nov 21 2026 Vanguard Arts SRL <https://vanguardarts.vip/> - 0.1.0-1
-- Initial RPM packaging (noarch, pure Python).
+- Initial RPM packaging

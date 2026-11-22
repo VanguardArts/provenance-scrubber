@@ -1,12 +1,12 @@
 # Maintainer: Vanguard Arts SRL <https://vanguardarts.vip/>
 pkgname=provenance-scrubber
-pkgver=0.2.0
+pkgver=0.3.0
 pkgrel=1
 pkgdesc="Detect and strip provenance metadata (C2PA/EXIF/XMP/IPTC) from images"
 arch=('any')
 url="https://github.com/VanguardArts/provenance-scrubber"
 license=('MIT')
-depends=('python' 'python-pillow' 'python-pyside6')
+depends=('python' 'python-pillow' 'python-pyside6' 'python-cbor2')
 optdepends=('python-flask: web UI' 'python-requests: http detector plugins')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/VanguardArts/provenance-scrubber/archive/refs/tags/v$pkgver.tar.gz")
 sha256sums=('SKIP')

@@ -13,6 +13,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from .analyzer import analyze, diff, pretty
 from .detect import detect
 from .pipeline import iter_images, process, summarize
 from .plugins import load_plugins
@@ -44,6 +45,12 @@ def main(argv: list[str] | None = None) -> int:
                          "next to the CLI if present)")
     ap.add_argument("--detect-only", action="store_true",
                     help="only report embedded signals, do not write output")
+    ap.add_argument("--analyze", action="store_true",
+                    help="deep-parse C2PA manifests + EXIF/XMP/IPTC and print "
+                         "a full provenance report (read-only)")
+    ap.add_argument("--proof", action="store_true",
+                    help="after processing, print the before/after provenance "
+                         "diff (what was removed vs. what remained)")
     args = ap.parse_args(argv)
 
     src = Path(args.input)
@@ -57,6 +64,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[{tag}] {img}")
             for f in rep.findings:
                 print(f"    - {f}")
+        return 0
+
+    if args.analyze:
+        for img in iter_images(src):
+            print(pretty(analyze(img)))
+            print()
         return 0
 
     detectors = None
@@ -74,6 +87,22 @@ def main(argv: list[str] | None = None) -> int:
                       workers=args.workers, detectors=detectors,
                       progress=progress)
     print(summarize(results))
+    if args.proof:
+        print()
+        for r in results:
+            if r.status != "ok":
+                continue
+            print(f"── {Path(r.source).name} ── provenance diff")
+            d = r.provenance_diff
+            removed = d.get("removed", [])
+            remained = d.get("remained", [])
+            for k in removed:
+                print(f"   removed : {k}")
+            for k in remained:
+                print(f"   remained: {k}")
+            if not removed and not remained:
+                print("   (no provenance metadata either before or after)")
+            print()
     if args.report:
         print(f"Report: {args.report}")
     return 1 if any(r.status != "ok" for r in results) else 0

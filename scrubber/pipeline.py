@@ -14,6 +14,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Callable
 
+from .analyzer import analyze, diff as analyze_diff, to_dict as analyze_to_dict
 from .detect import detect
 from .plugins import DetectorPlugin, Verdict, run_detectors
 from .transform import transform_file
@@ -31,6 +32,9 @@ class FileResult:
     declared_watermark: bool = False
     findings_after: list[str] = field(default_factory=list)
     detector_verdicts: list[dict] = field(default_factory=list)
+    provenance_before: dict = field(default_factory=dict)
+    provenance_after: dict = field(default_factory=dict)
+    provenance_diff: dict = field(default_factory=dict)
     psnr_db: float | None = None
     bytes_in: int = 0
     bytes_out: int = 0
@@ -58,6 +62,7 @@ def _process_one(
         before = detect(img)
         res.findings_before = before.findings
         res.declared_watermark = before.declared_watermark
+        res.provenance_before = analyze_to_dict(analyze(img))
 
         blob, ext, psnr = transform_file(img, level=level, out_format=out_format)
         dest = (out_dir / rel).with_suffix("." + ext)
@@ -66,6 +71,8 @@ def _process_one(
 
         after = detect(dest)
         res.findings_after = after.findings
+        res.provenance_after = analyze_to_dict(analyze(dest))
+        res.provenance_diff = analyze_diff(analyze(img), analyze(dest))
         if detectors:
             res.detector_verdicts = [
                 asdict(v) for v in run_detectors(dest, detectors)

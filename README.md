@@ -61,6 +61,8 @@ python -m scrubber.cli ./folder -o out/ -l 2 --report report.json
 python -m scrubber.cli ./folder --detect-only            # audit without writing
 python -m scrubber.cli ./folder -l 2 --workers 4 \       # parallel batch
     --detectors metadata --detectors "shell:/opt/lab/aidec {path}"
+python -m scrubber.cli photo.png --analyze              # full provenance report
+python -m scrubber.cli ./folder -o out/ --proof         # before/after diff
 
 # Desktop GUI (PySide6)
 python desktop_gui.py    # drag & drop, live results table, report export
@@ -74,6 +76,43 @@ The CLI recurses folders, mirrors the directory structure in the output,
 processes files in parallel (default `min(8, cpu_count)` threads), and never
 touches the sources. Every run can emit a JSON report listing per-file
 findings before/after, PSNR vs. source, detector verdicts, and any errors.
+
+## Provenance analyzer / viewer
+
+A deep reader for the provenance actually embedded in a file — proof of what
+was present, what was removed, and what remained.
+
+* `--analyze` deep-parses every C2PA manifest store (JUMBF) and surfaces the
+  claim, the actions assertion (each action, its software agent, and digital
+  source type), the ingredient history, and the signature (signer identity,
+  issuer, certificate validity window, algorithm). It also lists EXIF/XMP/IPTC.
+* `--proof` (after a run) prints a before/after **diff** per file. The JSON
+  report always carries `provenance_before`, `provenance_after`, and
+  `provenance_diff` — a complete, auditable record.
+* The GUI has an **Analyze** action and a detail pane showing each file's
+  before/after state.
+
+Example (a real ChatGPT-generated image from `contentauth/example-assets`):
+
+```
+$ python -m scrubber.cli ChatGPT_Image.png --analyze
+Provenance report: ChatGPT_Image.png
+  format: png
+  C2PA manifests: 2
+  ── manifest 1 ──
+     generator: ChatGPT 0.0.0
+     instanceID: xmp:iid:412ff266-e238-4869-b81e-b2da56461a52
+     action: c2pa.created by GPT-4o [trainedAlgorithmicMedia]
+     action: c2pa.converted
+     signer: Truepic Lens CLI in Sora
+     issuer: WebClaimSigningCA
+     cert valid: 250415150905Z .. 260415150904Z
+     signature alg: ES256
+```
+
+Note: the analyzer reports the *embedded* signer identity and certificate (what
+the manifest claims). It does not perform cryptographic signature validation
+against a trust list — use `c2patool` for that.
 
 ## Detector plugins
 
@@ -98,10 +137,12 @@ from scrubber.detect import detect
 from scrubber.strip import strip_file
 from scrubber.transform import transform_file
 from scrubber.pipeline import process
+from scrubber.analyzer import analyze, diff
 
 report = detect("photo.png")          # what provenance is embedded?
 blob, method = strip_file("photo.png")  # lossless metadata removal
 out, ext, psnr = transform_file("photo.png", level=2)  # full ladder
+prov = analyze("photo.png")           # deep C2PA/EXIF/XMP report (viewer)
 ```
 
 ## Verification workflow (recommended)

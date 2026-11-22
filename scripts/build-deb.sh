@@ -3,7 +3,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-VERSION="${VERSION:-0.2.0}"
+VERSION="${VERSION:-0.3.0}"
 OUT="build/deb/provenance-scrubber_${VERSION}_all.deb"
 STAGE="build/deb/root"
 LIBDIR="usr/lib/provenance-scrubber"

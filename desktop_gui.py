@@ -14,13 +14,15 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QFileDialog, QHBoxLayout, QLabel,
     QLineEdit, QMainWindow, QMessageBox, QProgressBar, QPushButton,
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget,
+    QSplitter, QTableWidget, QTableWidgetItem, QTextEdit, QVBoxLayout,
+    QWidget,
 )
 
+from scrubber.analyzer import analyze, pretty
 from scrubber.pipeline import iter_images, process
 from scrubber.plugins import load_plugins
 
@@ -100,14 +102,17 @@ class MainWindow(QMainWindow):
             "/opt/lab/aidec --json {path})")
         self.run_btn = QPushButton("Run")
         self.run_btn.clicked.connect(self.run)
+        self.analyze_btn = QPushButton("Analyze")
+        self.analyze_btn.clicked.connect(self.do_analyze)
         row3.addWidget(QLabel("Level:"))
         row3.addWidget(self.level)
         row3.addWidget(self.det_meta)
         row3.addWidget(self.det_shell, 1)
+        row3.addWidget(self.analyze_btn)
         row3.addWidget(self.run_btn)
         lay.addLayout(row3)
 
-        # --- progress + table
+        # --- progress + table + detail viewer
         self.progress = QProgressBar()
         self.progress.setVisible(False)
         lay.addWidget(self.progress)
@@ -117,7 +122,22 @@ class MainWindow(QMainWindow):
             ["file", "findings before", "after", "PSNR dB", "detectors",
              "status"])
         self.table.horizontalHeader().setStretchLastSection(True)
-        lay.addWidget(self.table, 1)
+
+        self.detail = QTextEdit()
+        self.detail.setReadOnly(True)
+        self.detail.setPlaceholderText(
+            "Select a row for its before/after provenance, or click Analyze "
+            "to view what's inside the source.")
+
+        split = QSplitter(Qt.Orientation.Vertical)
+        split.addWidget(self.table)
+        split.addWidget(self.detail)
+        split.setSizes([400, 220])
+        lay.addWidget(split, 1)
+
+        self.table.itemSelectionChanged.connect(self.on_selection)
+
+        self.setAcceptDrops(True)
 
         row4 = QHBoxLayout()
         self.status = QLabel("Ready.")
@@ -156,6 +176,71 @@ class MainWindow(QMainWindow):
         p = QFileDialog.getExistingDirectory(self, "Choose output folder")
         if p:
             self.out_edit.setText(p)
+
+    # ---------- provenance viewer
+    def do_analyze(self):
+        src = self.src_edit.text().strip()
+        if not src or not Path(src).exists():
+            QMessageBox.warning(self, "Provenance Scrubber",
+                                "Choose a valid source file or folder.")
+            return
+        parts = []
+        for img in iter_images(Path(src)):
+            parts.append(pretty(analyze(img)))
+        self.detail.setPlainText("\n\n".join(parts))
+        self.status.setText(f"Provenance analyzed for {len(parts)} file(s)")
+
+    def on_selection(self):
+        rows = self.table.selectionModel().selectedRows()
+        if not rows or not self.results:
+            return
+        idx = rows[0].row()
+        if idx >= len(self.results):
+            return
+        r = self.results[idx]
+        lines = [f"File: {Path(r.source).name}"]
+        lines.append("--- BEFORE (present in source) ---")
+        bef = r.provenance_before
+        for m in (bef.get("manifests") or []):
+            gen = (m.get("claim_generator", "") + " " +
+                   m.get("claim_generator_version", "")).strip()
+            lines.append(f"  manifest: {gen}" if gen else "  manifest: (unnamed)")
+            for a in (m.get("actions") or []):
+                dst = a.get("digital_source_type", "").split("/")[-1]
+                sa = a.get("software_agent", "")
+                lines.append(f"    action {a.get('action','')}"
+                             + (f" by {sa}" if sa else "")
+                             + (f" [{dst}]" if dst else ""))
+            if m.get("signature_subject"):
+                iss = m.get("signature_issuer", "")
+                lines.append(f"    signer: {m['signature_subject']}"
+                             + (f" (issuer {iss})" if iss else ""))
+            if m.get("instance_id"):
+                lines.append(f"    instanceID: {m['instance_id']}")
+        if not bef.get("has_manifest") and not bef.get("exif") and \
+                not bef.get("xmp") and not bef.get("iptc_present"):
+            lines.append("  (no provenance metadata)")
+        lines.append("")
+        lines.append("--- AFTER excision ---")
+        aft = r.provenance_after
+        if not (aft.get("manifests") or aft.get("exif") or aft.get("xmp")
+                or aft.get("iptc_present")):
+            lines.append("  (no provenance metadata)")
+        else:
+            for m in (aft.get("manifests") or []):
+                lines.append(f"  manifest: {m.get('claim_generator','')}")
+        lines.append("")
+        lines.append("--- DIFF (proof) ---")
+        d = r.provenance_diff
+        if d.get("removed"):
+            lines.append("  removed: " + ", ".join(d["removed"]))
+        else:
+            lines.append("  removed: (none)")
+        if d.get("remained"):
+            lines.append("  remained: " + ", ".join(d["remained"]))
+        else:
+            lines.append("  remained: (none)")
+        self.detail.setPlainText("\n".join(lines))
 
     # ---------- run
     def run(self):

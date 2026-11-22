@@ -5,11 +5,11 @@
 { lib, stdenv, python3, makeWrapper }:
 
 let
-  py = python3.withPackages (ps: [ ps.pillow ps.pyside6 ps.flask ps.requests ]);
+  py = python3.withPackages (ps: [ ps.pillow ps.pyside6 ps.cbor2 ps.flask ps.requests ]);
 in
 stdenv.mkDerivation rec {
   pname = "provenance-scrubber";
-  version = "0.2.0";
+  version = "0.3.0";
 
   src = ./.;
 

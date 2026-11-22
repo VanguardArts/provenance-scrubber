@@ -1,10 +1,10 @@
 Package: provenance-scrubber
-Version: 0.2.0
+Version: 0.3.0
 Section: graphics
 Priority: optional
 Architecture: all
 Maintainer: Vanguard Arts SRL <https://vanguardarts.vip/>
-Depends: python3, python3-pil, python3-pyside6
+Depends: python3, python3-pil, python3-pyside6, python3-cbor2
 Recommends: python3-flask, python3-requests
 Homepage: https://github.com/VanguardArts/provenance-scrubber
 Description: Detect and strip provenance metadata (C2PA/EXIF/XMP/IPTC) from images
