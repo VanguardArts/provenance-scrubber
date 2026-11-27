@@ -2,7 +2,7 @@
 
 import sys
 
-from scrubber.cli import main
+from image_scrub.cli import main
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -34,7 +34,7 @@ _STD = [0.229, 0.224, 0.225]
 
 
 def default_cache_dir() -> Path:
-    return Path.home() / ".cache" / "provenance-scrubber"
+    return Path.home() / ".cache" / "image-scrub"
 
 
 def _extractor_path(cache_dir: Path | None) -> Path:

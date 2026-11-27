@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Provenance Scrubber
-GenericName=Metadata scrubber
+Name=Image Scrub
+GenericName=Image metadata scrubber
 Comment=Detect and strip provenance metadata from images
-Exec=provenance-scrubber-gui
-Icon=provenance-scrubber
+Exec=image-scrub-gui
+Icon=image-scrub
 Terminal=false
 Categories=Graphics;Utility;
 Keywords=metadata;provenance;c2pa;exif;xmp;iptc;watermark;

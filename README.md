@@ -1,4 +1,4 @@
-# Provenance Scrubber
+# Image Scrub
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -19,8 +19,8 @@ The desktop GUI (drag & drop, level picker, live results table) and its status
 after a batch run:
 
 <p align="center">
-  <img src="docs/screenshots/gui-main.png" alt="Provenance Scrubber GUI" width="48%">
-  <img src="docs/screenshots/gui-results.png" alt="Provenance Scrubber results" width="48%">
+  <img src="docs/screenshots/gui-main.png" alt="Image Scrub GUI" width="48%">
+  <img src="docs/screenshots/gui-results.png" alt="Image Scrub results" width="48%">
 </p>
 
 ## What it detects / removes
@@ -56,13 +56,13 @@ care about."
 
 ```bash
 # CLI
-python -m scrubber.cli image.png -o out/                 # level 0, lossless
-python -m scrubber.cli ./folder -o out/ -l 2 --report report.json
-python -m scrubber.cli ./folder --detect-only            # audit without writing
-python -m scrubber.cli ./folder -l 2 --workers 4 \       # parallel batch
+python -m image_scrub.cli image.png -o out/                 # level 0, lossless
+python -m image_scrub.cli ./folder -o out/ -l 2 --report report.json
+python -m image_scrub.cli ./folder --detect-only            # audit without writing
+python -m image_scrub.cli ./folder -l 2 --workers 4 \       # parallel batch
     --detectors metadata --detectors "shell:/opt/lab/aidec {path}"
-python -m scrubber.cli photo.png --analyze              # full provenance report
-python -m scrubber.cli ./folder -o out/ --proof         # before/after diff
+python -m image_scrub.cli photo.png --analyze              # full provenance report
+python -m image_scrub.cli ./folder -o out/ --proof         # before/after diff
 
 # Desktop GUI (PySide6)
 python desktop_gui.py    # drag & drop, live results table, report export
@@ -95,7 +95,7 @@ was present, what was removed, and what remained.
 Example (a real ChatGPT-generated image from `contentauth/example-assets`):
 
 ```
-$ python -m scrubber.cli ChatGPT_Image.png --analyze
+$ python -m image_scrub.cli ChatGPT_Image.png --analyze
 Provenance report: ChatGPT_Image.png
   format: png
   C2PA manifests: 2
@@ -140,11 +140,11 @@ land in the report (`detector_verdicts`) and in the CLI summary / GUI table as
 ## Library
 
 ```python
-from scrubber.detect import detect
-from scrubber.strip import strip_file
-from scrubber.transform import transform_file
-from scrubber.pipeline import process
-from scrubber.analyzer import analyze, diff
+from image_scrub.detect import detect
+from image_scrub.strip import strip_file
+from image_scrub.transform import transform_file
+from image_scrub.pipeline import process
+from image_scrub.analyzer import analyze, diff
 
 report = detect("photo.png")          # what provenance is embedded?
 blob, method = strip_file("photo.png")  # lossless metadata removal
@@ -166,15 +166,15 @@ standalone binaries (no Python needed) for Linux, Windows and macOS (CLI + GUI).
 
 | Distro family | Format | Install |
 |---|---|---|
-| Debian / Ubuntu / Mint | `.deb` | `sudo dpkg -i provenance-scrubber_*.deb` |
-| Fedora / RHEL / openSUSE | `.rpm` | `sudo dnf install provenance-scrubber-*.rpm` |
-| Arch / Manjaro | `PKGBUILD` | `pacman -U provenance-scrubber-*.pkg.tar.zst` |
-| NixOS / Nix | flake | `nix profile install github:VanguardArts/provenance-scrubber` |
-| Any distro | Flatpak | `flatpak install com.vanguardarts.ProvenanceScrubber` |
-| Any distro (portable) | AppImage | download `provenance-scrubber-*.AppImage` |
+| Debian / Ubuntu / Mint | `.deb` | `sudo dpkg -i image-scrub_*.deb` |
+| Fedora / RHEL / openSUSE | `.rpm` | `sudo dnf install image-scrub-*.rpm` |
+| Arch / Manjaro | `PKGBUILD` | `pacman -U image-scrub-*.pkg.tar.zst` |
+| NixOS / Nix | flake | `nix profile install github:VanguardArts/image-scrub` |
+| Any distro | Flatpak | `flatpak install com.vanguardarts.ImageScrub` |
+| Any distro (portable) | AppImage | download `image-scrub-*.AppImage` |
 | Any Linux (no root) | portable | `./install.sh` (installs to `~/.local`) |
 
-Installed commands: `provenance-scrubber` (CLI) and `provenance-scrubber-gui`
+Installed commands: `image-scrub` (CLI) and `image-scrub-gui`
 (desktop GUI). A web UI is available via `python webapp.py`.
 
 ### Build the packages locally

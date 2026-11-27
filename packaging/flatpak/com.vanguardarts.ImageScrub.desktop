@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=Provenance Scrubber
+Name=Image Scrub
 Comment=Detect and strip provenance metadata from images
-Exec=provenance-scrubber-gui
-Icon=com.vanguardarts.ProvenanceScrubber
+Exec=image-scrub-gui
+Icon=com.vanguardarts.ImageScrub
 Terminal=false
 Categories=Graphics;Utility;

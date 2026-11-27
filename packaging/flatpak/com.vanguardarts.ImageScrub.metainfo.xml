@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.vanguardarts.ProvenanceScrubber</id>
-  <name>Provenance Scrubber</name>
+  <id>com.vanguardarts.ImageScrub</id>
+  <name>Image Scrub</name>
   <summary>Detect and strip provenance metadata from images</summary>
   <metadata_license>MIT</metadata_license>
   <project_license>MIT</project_license>
-  <url type="homepage">https://github.com/VanguardArts/provenance-scrubber</url>
+  <url type="homepage">https://github.com/VanguardArts/image-scrub</url>
   <description>
     <p>
       Batches images and removes embedded provenance signals — C2PA Content
@@ -13,10 +13,10 @@
       optional pixel-domain transforms that degrade invisible watermarks.
     </p>
   </description>
-  <launchable type="desktop-id">com.vanguardarts.ProvenanceScrubber.desktop</launchable>
+  <launchable type="desktop-id">com.vanguardarts.ImageScrub.desktop</launchable>
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/VanguardArts/provenance-scrubber/main/docs/screenshots/gui-main.png</image>
+      <image>https://raw.githubusercontent.com/VanguardArts/image-scrub/main/docs/screenshots/gui-main.png</image>
     </screenshot>
   </screenshots>
   <releases>

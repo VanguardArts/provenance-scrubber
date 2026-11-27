@@ -1,4 +1,4 @@
-"""Native desktop GUI for the provenance scrubber (PySide6).
+"""Native desktop GUI for the image scrub (PySide6).
 
     python desktop_gui.py
 
@@ -22,9 +22,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from scrubber.analyzer import analyze, pretty
-from scrubber.pipeline import iter_images, process
-from scrubber.plugins import load_plugins
+from image_scrub.analyzer import analyze, pretty
+from image_scrub.pipeline import iter_images, process
+from image_scrub.plugins import load_plugins
 
 LEVEL_LABELS = [
     "0 — metadata strip only (lossless, pixel-identical)",
@@ -59,7 +59,7 @@ class Worker(QThread):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Provenance Scrubber")
+        self.setWindowTitle("Image Scrub")
         self.resize(980, 640)
         self.results = []
 
@@ -197,7 +197,7 @@ class MainWindow(QMainWindow):
     def do_analyze(self):
         src = self.src_edit.text().strip()
         if not src or not Path(src).exists():
-            QMessageBox.warning(self, "Provenance Scrubber",
+            QMessageBox.warning(self, "Image Scrub",
                                 "Choose a valid source file or folder.")
             return
         parts = []
@@ -263,7 +263,7 @@ class MainWindow(QMainWindow):
     def run(self):
         src = self.src_edit.text().strip()
         if not src or not Path(src).exists():
-            QMessageBox.warning(self, "Provenance Scrubber",
+            QMessageBox.warning(self, "Image Scrub",
                                 "Choose a valid source file or folder.")
             return
         specs = []
@@ -323,11 +323,11 @@ class MainWindow(QMainWindow):
     def on_fail(self, msg):
         self.run_btn.setEnabled(True)
         self.status.setText("Failed.")
-        QMessageBox.critical(self, "Provenance Scrubber", msg)
+        QMessageBox.critical(self, "Image Scrub", msg)
 
     def export_report(self):
         if not self.results:
-            QMessageBox.information(self, "Provenance Scrubber",
+            QMessageBox.information(self, "Image Scrub",
                                     "Nothing to export yet.")
             return
         p, _ = QFileDialog.getSaveFileName(self, "Export report",

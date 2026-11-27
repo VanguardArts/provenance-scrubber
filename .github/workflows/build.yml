@@ -16,13 +16,13 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: linux
-            gui_name: provenance-scrubber
+            gui_name: image-scrub
           - os: windows-latest
             platform: windows
-            gui_name: provenance-scrubber.exe
+            gui_name: image-scrub.exe
           - os: macos-latest
             platform: macos
-            gui_name: provenance-scrubber
+            gui_name: image-scrub
 
     runs-on: ${{ matrix.os }}
 
@@ -40,36 +40,36 @@ jobs:
 
       - name: Build CLI binary
         run: |
-          pyinstaller --onefile --name provenance-scrubber-cli cli_main.py
+          pyinstaller --onefile --name image-scrub-cli cli_main.py
 
       - name: Build GUI app
         run: |
-          pyinstaller --onefile --windowed --name provenance-scrubber desktop_gui.py
+          pyinstaller --onefile --windowed --name image-scrub desktop_gui.py
 
       - name: Package artifacts (unix)
         if: runner.os != 'Windows'
         run: |
           cd dist
-          tar czf ../provenance-scrubber-cli-${{ matrix.platform }}.tar.gz provenance-scrubber-cli
+          tar czf ../image-scrub-cli-${{ matrix.platform }}.tar.gz image-scrub-cli
           if [ "${{ matrix.platform }}" = "macos" ]; then
-            ditto -c -k --sequesterRsrc provenance-scrubber.app ../provenance-scrubber-gui-${{ matrix.platform }}.zip
+            ditto -c -k --sequesterRsrc image-scrub.app ../image-scrub-gui-${{ matrix.platform }}.zip
           else
-            tar czf ../provenance-scrubber-gui-${{ matrix.platform }}.tar.gz ${{ matrix.gui_name }}
+            tar czf ../image-scrub-gui-${{ matrix.platform }}.tar.gz ${{ matrix.gui_name }}
           fi
 
       - name: Package artifacts (windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Compress-Archive dist/provenance-scrubber-cli.exe provenance-scrubber-cli-windows.zip
-          Compress-Archive dist/provenance-scrubber.exe provenance-scrubber-gui-windows.zip
+          Compress-Archive dist/image-scrub-cli.exe image-scrub-cli-windows.zip
+          Compress-Archive dist/image-scrub.exe image-scrub-gui-windows.zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: provenance-scrubber-${{ matrix.platform }}
+          name: image-scrub-${{ matrix.platform }}
           path: |
-            provenance-scrubber-cli-${{ matrix.platform }}.*
-            provenance-scrubber-gui-${{ matrix.platform }}.*
+            image-scrub-cli-${{ matrix.platform }}.*
+            image-scrub-gui-${{ matrix.platform }}.*
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
@@ -92,14 +92,14 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          pattern: provenance-scrubber-*
+          pattern: image-scrub-*
           merge-multiple: true
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
-            provenance-scrubber-cli-*
-            provenance-scrubber-gui-*
+            image-scrub-cli-*
+            image-scrub-gui-*
             build/deb/*.deb
             build/rpm/RPMS/noarch/*.rpm
           generate_release_notes: true

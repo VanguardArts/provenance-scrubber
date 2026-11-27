@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate real offscreen screenshots of the Provenance Scrubber GUI.
+"""Generate real offscreen screenshots of the Image Scrub GUI.
 
 Runs the actual PySide6 MainWindow with the Qt offscreen platform, feeds it a
 genuine sample set of images with embedded provenance metadata, then captures
@@ -20,8 +20,8 @@ from PIL import Image, PngImagePlugin
 from PySide6.QtWidgets import QApplication
 
 from desktop_gui import MainWindow
-from scrubber.pipeline import process
-from scrubber.plugins import load_plugins
+from image_scrub.pipeline import process
+from image_scrub.plugins import load_plugins
 
 SCREENSHOTS = Path(__file__).resolve().parent.parent / "docs" / "screenshots"
 

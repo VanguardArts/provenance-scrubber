@@ -1,5 +1,5 @@
 {
-  description = "Provenance Scrubber — detect and strip provenance metadata from images";
+  description = "Image Scrub — detect and strip provenance metadata from images";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -13,10 +13,10 @@
       in
       {
         packages.default = pkgs.callPackage ./default.nix { };
-        packages.provenance-scrubber = self.packages.${system}.default;
+        packages.image-scrub = self.packages.${system}.default;
         apps.default = {
           type = "app";
-          program = "${self.packages.${system}.default}/bin/provenance-scrubber";
+          program = "${self.packages.${system}.default}/bin/image-scrub";
         };
       });
 }

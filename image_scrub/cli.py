@@ -1,12 +1,12 @@
 """Command-line interface.
 
 Examples:
-  python -m scrubber.cli photo.png -o out/
-  python -m scrubber.cli ./batch-folder -o out/ -l 2 --report report.json
-  python -m scrubber.cli ./batch-folder --detect-only
-  python -m scrubber.cli ./folder -l 2 --detectors metadata --detectors "shell:/opt/lab/aidec {path}"
-  python -m scrubber.cli photo.png --analyze      # deep parse + C2PA verify
-  python -m scrubber.cli ./folder -l 3 --detectors openai --detectors "stable-signature:101101..."
+  python -m image_scrub.cli photo.png -o out/
+  python -m image_scrub.cli ./batch-folder -o out/ -l 2 --report report.json
+  python -m image_scrub.cli ./batch-folder --detect-only
+  python -m image_scrub.cli ./folder -l 2 --detectors metadata --detectors "shell:/opt/lab/aidec {path}"
+  python -m image_scrub.cli photo.png --analyze      # deep parse + C2PA verify
+  python -m image_scrub.cli ./folder -l 3 --detectors openai --detectors "stable-signature:101101..."
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ from .plugins import load_plugins
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
-        prog="scrubber",
+        prog="image_scrub",
         description="Batch-remove provenance metadata (C2PA/EXIF/XMP/IPTC) "
                     "and apply pixel-domain watermark-degradation transforms.")
     ap.add_argument("input", help="image file or folder (recursive)")

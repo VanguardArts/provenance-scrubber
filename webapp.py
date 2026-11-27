@@ -1,4 +1,4 @@
-"""Minimal web UI for the provenance scrubber.
+"""Minimal web UI for the image scrub.
 
     pip install flask
     python webapp.py            # serves on http://localhost:7860
@@ -18,12 +18,12 @@ from pathlib import Path
 
 from flask import Flask, request, send_file
 
-from scrubber.pipeline import IMAGE_EXTS, process, summarize
+from image_scrub.pipeline import IMAGE_EXTS, process, summarize
 
 app = Flask(__name__)
 
 PAGE = """<!doctype html><html><head><meta charset=utf-8>
-<title>Provenance Scrubber</title><style>
+<title>Image Scrub</title><style>
 body{font-family:system-ui;background:#14151a;color:#e8e8e8;max-width:640px;
 margin:4em auto;padding:0 1em}
 h1{font-size:1.4em;letter-spacing:.05em}
@@ -35,7 +35,7 @@ button{cursor:pointer;background:#3a5bd0;border-color:#3a5bd0}
 small{color:#999}
 pre{background:#1d1f26;padding:1em;border-radius:8px;overflow:auto}
 </style></head><body>
-<h1>PROVENANCE SCRUBBER</h1>
+<h1>IMAGE SCRUB</h1>
 <form method=post action=/scrub enctype=multipart/form-data>
 <div class=drop><input type=file name=files multiple
 accept=".png,.jpg,.jpeg,.webp,.zip"><br>

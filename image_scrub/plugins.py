@@ -6,7 +6,7 @@ detectors you care about — from our built-in metadata audit to external
 command-line tools or HTTP services used in your lab.
 
 Built-in plugins:
-  - ``metadata``  wraps scrubber.detect — flagged if any provenance signal remains
+  - ``metadata``  wraps image_scrub.detect — flagged if any provenance signal remains
   - ``watermark-declared`` — flagged only if a C2PA manifest declares a
     c2pa.watermarked.* action (i.e. generator asserts a latent watermark)
   - ``openai[:base_url]`` — POSTs the file to OpenAI's Content Provenance API

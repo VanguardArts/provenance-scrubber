@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
-  <title>Provenance Scrubber</title>
+  <title>Image Scrub</title>
   <desc>An image being wiped clean of hidden provenance metadata.</desc>
   <rect x="64" y="128" width="384" height="288" rx="40" stroke="#19A7B8" stroke-width="26"/>
   <circle cx="180" cy="224" r="42" fill="#19A7B8"/>

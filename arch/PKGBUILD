@@ -1,32 +1,32 @@
 # Maintainer: Vanguard Arts SRL <https://vanguardarts.vip/>
-pkgname=provenance-scrubber
+pkgname=image-scrub
 pkgver=0.4.0
 pkgrel=1
 pkgdesc="Detect and strip provenance metadata (C2PA/EXIF/XMP/IPTC) from images"
 arch=('any')
-url="https://github.com/VanguardArts/provenance-scrubber"
+url="https://github.com/VanguardArts/image-scrub"
 license=('MIT')
 depends=('python' 'python-pillow' 'python-pyside6' 'python-cbor2')
 optdepends=('python-flask: web UI' 'python-requests: http detector plugins')
-source=("$pkgname-$pkgver.tar.gz::https://github.com/VanguardArts/provenance-scrubber/archive/refs/tags/v$pkgver.tar.gz")
+source=("$pkgname-$pkgver.tar.gz::https://github.com/VanguardArts/image-scrub/archive/refs/tags/v$pkgver.tar.gz")
 sha256sums=('SKIP')
 
 package() {
     cd "$srcdir/$pkgname-$pkgver"
-    install -dm755 "$pkgdir/usr/lib/provenance-scrubber"
-    cp -r scrubber "$pkgdir/usr/lib/provenance-scrubber/scrubber"
-    cp cli_main.py desktop_gui.py webapp.py "$pkgdir/usr/lib/provenance-scrubber/"
+    install -dm755 "$pkgdir/usr/lib/image-scrub"
+    cp -r image_scrub "$pkgdir/usr/lib/image-scrub/image_scrub"
+    cp cli_main.py desktop_gui.py webapp.py "$pkgdir/usr/lib/image-scrub/"
 
-    printf '#!/bin/sh\nexec python3 /usr/lib/provenance-scrubber/cli_main.py "$@"\n' > "$pkgdir/usr/bin/provenance-scrubber"
-    printf '#!/bin/sh\nexec python3 /usr/lib/provenance-scrubber/desktop_gui.py "$@"\n' > "$pkgdir/usr/bin/provenance-scrubber-gui"
-    chmod 755 "$pkgdir/usr/bin/provenance-scrubber" "$pkgdir/usr/bin/provenance-scrubber-gui"
+    printf '#!/bin/sh\nexec python3 /usr/lib/image-scrub/cli_main.py "$@"\n' > "$pkgdir/usr/bin/image-scrub"
+    printf '#!/bin/sh\nexec python3 /usr/lib/image-scrub/desktop_gui.py "$@"\n' > "$pkgdir/usr/bin/image-scrub-gui"
+    chmod 755 "$pkgdir/usr/bin/image-scrub" "$pkgdir/usr/bin/image-scrub-gui"
 
-    install -Dm644 packaging/provenance-scrubber.desktop \
-        "$pkgdir/usr/share/applications/provenance-scrubber.desktop"
-    install -Dm644 packaging/provenance-scrubber.svg \
-        "$pkgdir/usr/share/icons/hicolor/scalable/apps/provenance-scrubber.svg"
+    install -Dm644 packaging/image-scrub.desktop \
+        "$pkgdir/usr/share/applications/image-scrub.desktop"
+    install -Dm644 packaging/image-scrub.svg \
+        "$pkgdir/usr/share/icons/hicolor/scalable/apps/image-scrub.svg"
     for sz in 16 24 32 48 64 96 128 256 512; do
-        install -Dm644 "packaging/icons/hicolor/${sz}x${sz}/apps/provenance-scrubber.png" \
-            "$pkgdir/usr/share/icons/hicolor/${sz}x${sz}/apps/provenance-scrubber.png"
+        install -Dm644 "packaging/icons/hicolor/${sz}x${sz}/apps/image-scrub.png" \
+            "$pkgdir/usr/share/icons/hicolor/${sz}x${sz}/apps/image-scrub.png"
     done
 }
